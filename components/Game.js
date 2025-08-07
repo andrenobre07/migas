@@ -19,16 +19,16 @@ const GAME_SPEED_INCREMENT = 0.003;
 // --- ALTERAÇÃO INÍCIO: Ajuste da física para um mundo maior ---
 // Aumentamos a força do pulo e a gravidade para corresponder à nova altura.
 // Podes experimentar com estes valores para o pulo ficar como gostas!
-const DINO_JUMP_FORCE = 24; // Era 16
-const GRAVITY = 0.9;      // Era 0.7
+const DINO_JUMP_FORCE = 20; // Era 16
+const GRAVITY = 1;      // Era 0.7
 // --- ALTERAÇÃO FIM ---
 
 const OBSTACLE_INTERVAL_MIN = 800;
 const OBSTACLE_INTERVAL_MAX = 2000;
 
 // Constantes de Posição (para usar com Tailwind)
-const GROUND_HEIGHT_PX = 40;
-const DINO_INITIAL_LEFT_PX = 50;
+const GROUND_HEIGHT_PX = 50;
+const DINO_INITIAL_LEFT_PX = 90;
 // -----------------------------------------------------------------
 
 const Game = () => {
@@ -257,7 +257,7 @@ const Game = () => {
 
       {isGameOver && (
         <div className="w-full h-full flex flex-col justify-center items-center bg-gray-100/80 text-gray-800 text-center z-10 p-4">
-          <Image src={GAMEOVER_IMAGE_PATH} alt="Game Over" width={190} height={40} unoptimized />
+          <Image src={GAMEOVER_IMAGE_PATH} alt="Game Over" width={300} height={150} unoptimized />
           <h2 className="text-3xl md:text-4xl mt-4 mb-2 font-bold">Fim de Jogo</h2>
           <p className="mb-4 md:text-lg">Seu recorde máximo: {Math.floor(highScore)}</p>
           <button 

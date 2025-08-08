@@ -1,6 +1,7 @@
 // --- components/Game.js (VERSÃO ATUALIZADA) ---
 import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import Image from 'next/image';
+import HomePage from '@/pages';
 
 // --- CONFIGURAÇÕES GLOBAIS ---
 const DINO_IMAGE_PATH = '/images/dino.png';
@@ -12,19 +13,19 @@ const BACKGROUND_AUDIO_PATH = '/audio/background.mp3';
 const JUMP_AUDIO_PATH = '/audio/jump.mp3';
 const HIT_AUDIO_PATH = '/audio/hit.mp3';
 
-const GAME_SPEED_START = 8;
-const GAME_SPEED_INCREMENT = 0.003;
+const GAME_SPEED_START = 6.5;
+const GAME_SPEED_INCREMENT = 0.002;
 
-const DINO_JUMP_FORCE = 22;
-const GRAVITY = 0.9;
+const DINO_JUMP_FORCE = 35;
+const GRAVITY = 2;
 
 const OBSTACLE_INTERVAL_MIN = 900;  // Aumentei ligeiramente o intervalo mínimo
-const OBSTACLE_INTERVAL_MAX = 2200; // Aumentei o intervalo máximo
+const OBSTACLE_INTERVAL_MAX = 1800; // Aumentei o intervalo máximo
 
-const GROUND_HEIGHT_PX = 40;
+const GROUND_HEIGHT_PX = 0;
 const DINO_INITIAL_LEFT_PX = 50;
-const DINO_WIDTH = 50;
-const DINO_HEIGHT = 50;
+const DINO_WIDTH = 70;
+const DINO_HEIGHT = 70;
 const OBSTACLE_WIDTH = 40;
 const OBSTACLE_HEIGHT = 80;
 // -----------------------------------------------------------------
@@ -220,6 +221,7 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
                         >
                             Ver Leaderboard
                         </button>
+                       
                     </div>
                 </div>
             )}

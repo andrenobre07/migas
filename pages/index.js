@@ -90,7 +90,7 @@ export default function HomePage() {
     style={{
         fontSize: '2rem',
         padding: '1rem 5rem', // top-bottom 5rem, left-right 10rem
-        minWidth: '75rem'
+        minWidth: '20rem'
     }}
     aria-label="Pular"
 >

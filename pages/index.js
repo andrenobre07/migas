@@ -84,13 +84,20 @@ export default function HomePage() {
                         onGameOver={handleGameOver} 
                         onGoToLeaderboard={handleGoToLeaderboard} // Passamos a nova função como prop
                     />
-                    <button
-                        onClick={handleJumpButtonClick}
-                        className="mt-6 px-8 py-4 bg-blue-500 text-white font-bold text-xl rounded-lg shadow-lg hover:bg-blue-600 active:bg-blue-700 transition-transform transform active:scale-95"
-                        aria-label="Pular"
-                    >
-                        PULAR
-                    </button>
+    <button 
+    onClick={handleJumpButtonClick}
+    className="mt-6 bg-blue-500 text-white font-bold rounded-lg shadow-lg hover:bg-blue-600 active:bg-blue-700 transition-transform transform active:scale-95"
+    style={{
+        fontSize: '2rem',
+        padding: '1rem 5rem', // top-bottom 5rem, left-right 10rem
+        minWidth: '75rem'
+    }}
+    aria-label="Pular"
+>
+    PULAR
+</button>
+
+
                 </div>
             )}
         </main>

@@ -36,7 +36,7 @@ const LoginScreen = ({ username, setUsername, onPlay, onShowLeaderboard }) => {
           onClick={onShowLeaderboard}
           className="w-full px-6 py-3 text-lg text-white bg-blue-500 rounded-md cursor-pointer transition-colors hover:bg-blue-600"
         >
-          Leaderboard - não funciona ainda 
+          Leaderboard
         </button>
       </div>
     </div>

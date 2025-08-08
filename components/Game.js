@@ -16,8 +16,8 @@ const HIT_AUDIO_PATH = '/audio/hit.mp3';
 const GAME_SPEED_START = 6.5;
 const GAME_SPEED_INCREMENT = 0.002;
 
-const DINO_JUMP_FORCE = 35;
-const GRAVITY = 2;
+const DINO_JUMP_FORCE = 32;
+const GRAVITY = 1.75;
 
 const OBSTACLE_INTERVAL_MIN = 900;  // Aumentei ligeiramente o intervalo mínimo
 const OBSTACLE_INTERVAL_MAX = 1800; // Aumentei o intervalo máximo

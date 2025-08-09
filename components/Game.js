@@ -32,7 +32,7 @@ const OBSTACLE_HEIGHT = 80;
 // -----------------------------------------------------------------
 
 // 1ª ALTERAÇÃO: Adicionada a prop "skin" aqui
-const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard, skin }, ref) => {
+const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard, skin, onShowSkins }, ref) => {
     // --- State Hooks ---
     const [isPlaying, setIsPlaying] = useState(false);
     const [isJumping, setIsJumping] = useState(false);
@@ -217,6 +217,12 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard, skin }, ref)
                             className="px-6 py-3 bg-blue-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-blue-600 transition-colors"
                         >
                             Ver Leaderboard
+                        </button>
+                         <button 
+                            onClick={onShowSkins}
+                            className="px-6 py-3 bg-blue-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-blue-600 transition-colors"
+                        >
+                            Skins
                         </button>
                     </div>
                 </div>

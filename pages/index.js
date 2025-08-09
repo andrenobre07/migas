@@ -45,6 +45,8 @@ export default function HomePage() {
         setView('leaderboard');
     };
 
+    
+
     const handleJumpButtonClick = () => {
         gameRef.current?.triggerJump();
     };
@@ -79,6 +81,7 @@ export default function HomePage() {
                         username={username}
                         onGameOver={handleGameOver} 
                         onGoToLeaderboard={handleGoToLeaderboard} 
+                         onShowSkins={handleShowSkins}
                         skin={selectedSkin} // ALTERAÇÃO: Passa a skin selecionada para o jogo
                     />
                     <button

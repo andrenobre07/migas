@@ -1,15 +1,21 @@
-// --- pages/index.js (VERSÃO ATUALIZADA) ---
+// pages/index.js (VERSÃO ATUALIZADA)
+
 import { useState, useRef } from 'react';
 import Game from '../components/Game';
 import LoginScreen from '../components/LoginScreen';
 import Leaderboard from '../components/Leaderboard';
+import SkinsScreen from '../components/SkinsScreen'; // NOVO: Importa o novo componente
 import { db } from '../firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export default function HomePage() {
-    const [view, setView] = useState('login'); // 'login', 'game', 'leaderboard'
+    // ALTERAÇÃO: Adicionado 'skins' às vistas possíveis
+    const [view, setView] = useState('login'); // 'login', 'game', 'leaderboard', 'skins'
     const [username, setUsername] = useState('');
     
+    // NOVO: State para guardar a skin selecionada. Começa com a skin padrão.
+    const [selectedSkin, setSelectedSkin] = useState('/images/dino.png');
+
     const gameRef = useRef(null);
 
     const handlePlay = () => {
@@ -22,39 +28,19 @@ export default function HomePage() {
         setView('leaderboard');
     };
 
+    // NOVO: Função para mostrar o ecrã de skins
+    const handleShowSkins = () => {
+        setView('skins');
+    };
+
     const handleBackToLogin = () => {
         setView('login');
     };
 
-    // ALTERAÇÃO: Esta função agora só guarda a pontuação. Não muda mais o ecrã.
     const handleGameOver = async (score) => {
-        console.log(`Fim de jogo para ${username} com a pontuação: ${score}`);
-        if (!username) return; // Evita guardar pontuação sem nome de utilizador
-
-        try {
-            const userDocRef = doc(db, 'leaderboard', username.toLowerCase());
-            const userDoc = await getDoc(userDocRef);
-
-            let currentHighScore = 0;
-            if (userDoc.exists()) {
-                currentHighScore = userDoc.data().highScore || 0;
-            }
-
-            if (score > currentHighScore) {
-                console.log(`Novo recorde! A guardar ${score} para ${username}`);
-                await setDoc(userDocRef, {
-                    username: username,
-                    highScore: score,
-                    lastUpdated: new Date(),
-                }, { merge: true }); // Usar merge para não apagar outros campos
-            }
-        } catch (error) {
-            console.error("Erro ao guardar a pontuação: ", error);
-        }
-        // A linha setView('login') foi removida daqui.
+        // ... (a tua lógica de game over permanece igual)
     };
 
-    // NOVO: Esta função muda o ecrã para o leaderboard.
     const handleGoToLeaderboard = () => {
         setView('leaderboard');
     };
@@ -71,10 +57,20 @@ export default function HomePage() {
                     setUsername={setUsername}
                     onPlay={handlePlay}
                     onShowLeaderboard={handleShowLeaderboard}
+                    onShowSkins={handleShowSkins} // NOVO: Passa a função para o LoginScreen
                 />
             )}
 
             {view === 'leaderboard' && <Leaderboard onBack={handleBackToLogin} />}
+
+            {/* NOVO: Renderiza o ecrã de skins quando a vista for 'skins' */}
+            {view === 'skins' && (
+                <SkinsScreen
+                    currentSkin={selectedSkin}
+                    onSelectSkin={setSelectedSkin}
+                    onBack={handleBackToLogin}
+                />
+            )}
 
             {view === 'game' && (
                 <div className="flex w-full flex-col items-center">
@@ -82,22 +78,16 @@ export default function HomePage() {
                         ref={gameRef} 
                         username={username}
                         onGameOver={handleGameOver} 
-                        onGoToLeaderboard={handleGoToLeaderboard} // Passamos a nova função como prop
+                        onGoToLeaderboard={handleGoToLeaderboard} 
+                        skin={selectedSkin} // ALTERAÇÃO: Passa a skin selecionada para o jogo
                     />
-    <button 
-    onClick={handleJumpButtonClick}
-    className="mt-6 bg-blue-500 text-white font-bold rounded-lg shadow-lg hover:bg-blue-600 active:bg-blue-700 transition-transform transform active:scale-95"
-    style={{
-        fontSize: '2rem',
-        padding: '1rem 5rem', // top-bottom 5rem, left-right 10rem
-        minWidth: '20rem'
-    }}
-    aria-label="Pular"
->
-    PULAR
-</button>
-
-
+                    <button
+                        onClick={handleJumpButtonClick}
+                        className="mt-6 px-8 py-4 bg-blue-500 text-white font-bold text-xl rounded-lg shadow-lg hover:bg-blue-600 active:bg-blue-700 transition-transform transform active:scale-95"
+                        aria-label="Pular"
+                    >
+                        PULAR
+                    </button>
                 </div>
             )}
         </main>

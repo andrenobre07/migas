@@ -1,12 +1,13 @@
-// --- components/Game.js (VERSÃO ATUALIZADA) ---
+// --- components/Game.js (VERSÃO ATUALIZADA E COMPLETA) ---
 import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import Image from 'next/image';
-import HomePage from '@/pages';
+// O import do HomePage foi removido pois não é necessário e pode causar erros.
 
 // --- CONFIGURAÇÕES GLOBAIS ---
-const DINO_IMAGE_PATH = '/images/dino.png';
+// A constante DINO_IMAGE_PATH já não é usada para renderizar, mas pode ser mantida se quiseres
+const DINO_IMAGE_PATH = '/images/dino.png'; 
 const OBSTACLE_IMAGE_PATH = '/images/cactus.png';
-const GAMEOVER_IMAGE_PATH = '/images/gameover.png'; // Imagem de Game Over
+const GAMEOVER_IMAGE_PATH = '/images/gameover.png';
 const BACKGROUND_IMAGE_PATH = '/images/background.png';
 
 const BACKGROUND_AUDIO_PATH = '/audio/background.mp3';
@@ -19,8 +20,8 @@ const GAME_SPEED_INCREMENT = 0.002;
 const DINO_JUMP_FORCE = 32;
 const GRAVITY = 1.55;
 
-const OBSTACLE_INTERVAL_MIN = 900;  // Aumentei ligeiramente o intervalo mínimo
-const OBSTACLE_INTERVAL_MAX = 1800; // Aumentei o intervalo máximo
+const OBSTACLE_INTERVAL_MIN = 900;
+const OBSTACLE_INTERVAL_MAX = 1800;
 
 const GROUND_HEIGHT_PX = 0;
 const DINO_INITIAL_LEFT_PX = 50;
@@ -30,14 +31,14 @@ const OBSTACLE_WIDTH = 40;
 const OBSTACLE_HEIGHT = 80;
 // -----------------------------------------------------------------
 
-// Adicionado onGoToLeaderboard como prop
-const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
+// 1ª ALTERAÇÃO: Adicionada a prop "skin" aqui
+const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard, skin }, ref) => {
     // --- State Hooks ---
     const [isPlaying, setIsPlaying] = useState(false);
     const [isJumping, setIsJumping] = useState(false);
     const [isGameOver, setIsGameOver] = useState(false);
     const [score, setScore] = useState(0);
-    const [finalScore, setFinalScore] = useState(0); // Guarda a pontuação final
+    const [finalScore, setFinalScore] = useState(0);
     const [dinoY, setDinoY] = useState(0);
     const [dinoVelocityY, setDinoVelocityY] = useState(0);
     const [obstacles, setObstacles] = useState([]);
@@ -79,7 +80,7 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
         audioRefs.current.hit?.play();
 
         if (typeof onGameOver === 'function') {
-            onGameOver(finalScoreValue); // Envia a pontuação para ser guardada no Firebase
+            onGameOver(finalScoreValue);
         }
     }, [onGameOver]);
 
@@ -89,7 +90,6 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
                 const containerWidth = gameContainerRef.current?.offsetWidth || 800;
                 setObstacles(prev => [...prev, { x: containerWidth, id: Date.now() }]);
                 
-                // CORREÇÃO: O intervalo já não diminui com a velocidade, o que evita o excesso de cactos.
                 const nextInterval = Math.random() * (OBSTACLE_INTERVAL_MAX - OBSTACLE_INTERVAL_MIN) + OBSTACLE_INTERVAL_MIN;
                 obstacleTimerRef.current = setTimeout(generate, nextInterval);
             }
@@ -97,7 +97,6 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
         generate();
     }, []);
     
-    // ... (gameLoop e outros hooks permanecem iguais à versão anterior que te enviei)
     const gameLoop = useCallback(() => {
         if (!stateRefs.current.isPlaying || stateRefs.current.isGameOver) {
             return;
@@ -138,7 +137,6 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
         gameSpeedRef.current += GAME_SPEED_INCREMENT;
         gameLoopRef.current = requestAnimationFrame(gameLoop);
     }, [handleGameOver]);
-    // ...
 
     const startGame = useCallback(() => {
         setIsGameOver(false);
@@ -157,10 +155,10 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
     }, []);
     
     useEffect(() => {
-        if (!isGameOver) { // Só inicia o jogo se não estiver em modo Game Over
+        if (!isGameOver) {
             startGame();
         }
-    }, []); // Este useEffect agora só corre uma vez para iniciar o jogo
+    }, []);
 
     useEffect(() => {
         if (isPlaying) {
@@ -201,7 +199,6 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
             }}
             tabIndex={0}
         >
-            {/* --- ECRÃ DE GAME OVER --- */}
             {isGameOver && (
                 <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm">
                     <div className="w-1/2 max-w-[300px] mb-4">
@@ -210,23 +207,21 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
                     <p className="text-white text-3xl font-bold mb-6">Pontuação: {finalScore}</p>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <button 
-                            onClick={startGame} // Botão para reiniciar
+                            onClick={startGame}
                             className="px-6 py-3 bg-green-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-green-600 transition-colors"
                         >
                             Tentar Novamente
                         </button>
                         <button 
-                            onClick={onGoToLeaderboard} // Botão para ir para o Leaderboard
+                            onClick={onGoToLeaderboard}
                             className="px-6 py-3 bg-blue-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-blue-600 transition-colors"
                         >
                             Ver Leaderboard
                         </button>
-                       
                     </div>
                 </div>
             )}
 
-            {/* O resto do jogo só é visível se não for Game Over, ou fica por baixo */}
             <div className="absolute top-4 right-4 font-mono text-sm md:text-lg font-bold text-gray-800 flex flex-col items-end z-40 bg-white/70 p-2 rounded-md shadow-md">
                 <span>JOGADOR: {username}</span>
                 <span>PONTOS: {Math.floor(score)}</span>
@@ -239,7 +234,8 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard }, ref) => {
                     bottom: `${GROUND_HEIGHT_PX + dinoY}px`, left: `${DINO_INITIAL_LEFT_PX}px`,
                 }}
             >
-                <Image src={DINO_IMAGE_PATH} alt="Dino" layout="fill" objectFit="contain" unoptimized />
+                {/* 2ª ALTERAÇÃO: A prop "skin" é usada aqui em vez do caminho fixo */}
+                <Image src={skin} alt="Dino" layout="fill" objectFit="contain" unoptimized />
             </div>
 
             {obstacles.map(obstacle => (

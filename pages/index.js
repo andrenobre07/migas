@@ -1,21 +1,16 @@
-// pages/index.js (VERSÃO ATUALIZADA)
-
 import { useState, useRef } from 'react';
 import Game from '../components/Game';
 import LoginScreen from '../components/LoginScreen';
 import Leaderboard from '../components/Leaderboard';
-import SkinsScreen from '../components/SkinsScreen'; // NOVO: Importa o novo componente
+import SkinsScreen from '../components/SkinsScreen';
 import { db } from '../firebase/config';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+// --- ALTERAÇÃO: Importar tudo o que precisamos do firestore ---
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function HomePage() {
-    // ALTERAÇÃO: Adicionado 'skins' às vistas possíveis
     const [view, setView] = useState('login'); // 'login', 'game', 'leaderboard', 'skins'
     const [username, setUsername] = useState('');
-    
-    // NOVO: State para guardar a skin selecionada. Começa com a skin padrão.
     const [selectedSkin, setSelectedSkin] = useState('/images/dino.png');
-
     const gameRef = useRef(null);
 
     const handlePlay = () => {
@@ -28,7 +23,6 @@ export default function HomePage() {
         setView('leaderboard');
     };
 
-    // NOVO: Função para mostrar o ecrã de skins
     const handleShowSkins = () => {
         setView('skins');
     };
@@ -37,15 +31,46 @@ export default function HomePage() {
         setView('login');
     };
 
+    // --- ALTERAÇÃO PRINCIPAL: A função 'handleGameOver' agora tem a lógica para guardar no Firebase ---
     const handleGameOver = async (score) => {
-        // ... (a tua lógica de game over permanece igual)
-    };
+        console.log(`Fim de jogo para ${username} com a pontuação: ${score}`);
+        // Garante que não tentamos guardar uma pontuação sem um nome de utilizador
+        if (!username) {
+            console.error("Username está vazio, não é possível guardar a pontuação.");
+            setView('login'); // Volta ao login se algo correr mal
+            return;
+        }
 
-    const handleGoToLeaderboard = () => {
-        setView('leaderboard');
-    };
+        try {
+            // Cria uma referência ao documento do utilizador (usa toLowerCase para não duplicar utilizadores)
+            const userDocRef = doc(db, 'leaderboard', username.toLowerCase());
+            const userDoc = await getDoc(userDocRef);
 
-    
+            let currentHighScore = 0;
+            // Se o documento do jogador já existir, lê a sua pontuação mais alta
+            if (userDoc.exists()) {
+                currentHighScore = userDoc.data().highScore;
+            }
+
+            // Apenas guarda no Firebase se a nova pontuação for um recorde
+            if (score > currentHighScore) {
+                console.log(`Novo recorde! A guardar ${score} para ${username}`);
+                await setDoc(userDocRef, {
+                    username: username, // Guarda o nome original para mostrar no leaderboard
+                    highScore: score,
+                    lastUpdated: serverTimestamp(), // Guarda a data/hora do servidor
+                });
+            } else {
+                console.log(`Pontuação de ${score} não superou o recorde de ${currentHighScore}.`);
+            }
+
+        } catch (error) {
+            console.error("Erro ao guardar a pontuação no Firebase: ", error);
+        }
+
+        // Depois de jogar, volta sempre para o ecrã de login
+        setView('login');
+    };
 
     const handleJumpButtonClick = () => {
         gameRef.current?.triggerJump();
@@ -59,13 +84,12 @@ export default function HomePage() {
                     setUsername={setUsername}
                     onPlay={handlePlay}
                     onShowLeaderboard={handleShowLeaderboard}
-                    onShowSkins={handleShowSkins} // NOVO: Passa a função para o LoginScreen
+                    onShowSkins={handleShowSkins}
                 />
             )}
 
             {view === 'leaderboard' && <Leaderboard onBack={handleBackToLogin} />}
 
-            {/* NOVO: Renderiza o ecrã de skins quando a vista for 'skins' */}
             {view === 'skins' && (
                 <SkinsScreen
                     currentSkin={selectedSkin}
@@ -80,22 +104,20 @@ export default function HomePage() {
                         ref={gameRef} 
                         username={username}
                         onGameOver={handleGameOver} 
-                        onGoToLeaderboard={handleGoToLeaderboard} 
-                         onShowSkins={handleShowSkins}
-                        skin={selectedSkin} // ALTERAÇÃO: Passa a skin selecionada para o jogo
+                        skin={selectedSkin}
                     />
-                      <button 
-    onClick={handleJumpButtonClick}
-    className="mt-6 bg-blue-500 text-white font-bold rounded-lg shadow-lg hover:bg-blue-600 active:bg-blue-700 transition-transform transform active:scale-95"
-    style={{
-        fontSize: '2rem',
-        padding: '1rem 5rem', // top-bottom 5rem, left-right 10rem
-        minWidth: '20rem'
-    }}
-    aria-label="Pular"
->
-    PULAR
-</button>
+                    <button 
+                        onClick={handleJumpButtonClick}
+                        className="mt-6 bg-blue-500 text-white font-bold rounded-lg shadow-lg hover:bg-blue-600 active:bg-blue-700 transition-transform transform active:scale-95"
+                        style={{
+                            fontSize: '2rem',
+                            padding: '1rem 5rem',
+                            minWidth: '20rem'
+                        }}
+                        aria-label="Pular"
+                    >
+                        PULAR
+                    </button>
                 </div>
             )}
         </main>

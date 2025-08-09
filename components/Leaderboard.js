@@ -37,7 +37,7 @@ const Leaderboard = ({ onBack }) => {
 
     return (
         <div className="w-full max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Leaderboard - Top 10</h1>
+            <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Leaderboard - Top 10 </h1>
             {loading && <p className="text-center">A carregar...</p>}
             
             {/* NOVO: Mostra a mensagem de erro no ecrã */}

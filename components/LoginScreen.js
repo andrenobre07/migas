@@ -9,6 +9,7 @@ const LoginScreen = ({ username, setUsername, onPlay, onShowLeaderboard, onShowS
     return (
         <div className="w-full max-w-md mx-auto bg-white p-8 rounded-lg shadow-md text-center">
             <h1 className="text-3xl font-bold mb-6 text-gray-800">Jogo do Migas</h1>
+            <h4 className="text-3xl font-bold mb-6 text-gray-800">Tive de dar reset na base de dados (tabela de classificação) pois agora ganha se pontos mais lentamente</h4>
             <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
                     Insere o teu nome de utilizador (mín. 3 letras)

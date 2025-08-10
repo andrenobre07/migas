@@ -12,6 +12,7 @@ const availableSkins = [
     { id: 'matrix', name: 'Migas ice tea', imagePath: '/images/dino4.png' },
      { id: 'anos', name: 'Migas jeitoso', imagePath: '/images/dino5.png' },
        { id: 'aids', name: 'Migas com ebola', imagePath: '/images/dino6.png' },
+       { id: 'benfica', name: 'Migas benfiquista', imagePath: '/images/dino7.png' },
 ];
 
 const SkinsScreen = ({ currentSkin, onSelectSkin, onBack }) => {

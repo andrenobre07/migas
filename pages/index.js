@@ -3,12 +3,13 @@ import Game from '../components/Game';
 import LoginScreen from '../components/LoginScreen';
 import Leaderboard from '../components/Leaderboard';
 import SkinsScreen from '../components/SkinsScreen';
+import PatchNotesScreen from '../components/PatchNotesScreen'; // ADIÇÃO: Importa o novo componente
 import { db } from '../firebase/config';
-// --- ALTERAÇÃO: Importar tudo o que precisamos do firestore ---
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function HomePage() {
-    const [view, setView] = useState('login'); // 'login', 'game', 'leaderboard', 'skins'
+    // ADIÇÃO: 'patchnotes' foi adicionado às vistas possíveis
+    const [view, setView] = useState('login'); // 'login', 'game', 'leaderboard', 'skins', 'patchnotes'
     const [username, setUsername] = useState('');
     const [selectedSkin, setSelectedSkin] = useState('/images/dino.png');
     const gameRef = useRef(null);
@@ -27,38 +28,38 @@ export default function HomePage() {
         setView('skins');
     };
 
+    // ADIÇÃO: Nova função para mostrar o ecrã de Patch Notes
+    const handleShowPatchNotes = () => {
+        setView('patchnotes');
+    };
+
     const handleBackToLogin = () => {
         setView('login');
     };
 
-    // --- ALTERAÇÃO PRINCIPAL: A função 'handleGameOver' agora tem a lógica para guardar no Firebase ---
     const handleGameOver = async (score) => {
         console.log(`Fim de jogo para ${username} com a pontuação: ${score}`);
-        // Garante que não tentamos guardar uma pontuação sem um nome de utilizador
         if (!username) {
             console.error("Username está vazio, não é possível guardar a pontuação.");
-            setView('login'); // Volta ao login se algo correr mal
+            setView('login');
             return;
         }
 
         try {
-            // Cria uma referência ao documento do utilizador (usa toLowerCase para não duplicar utilizadores)
             const userDocRef = doc(db, 'leaderboard', username.toLowerCase());
             const userDoc = await getDoc(userDocRef);
 
             let currentHighScore = 0;
-            // Se o documento do jogador já existir, lê a sua pontuação mais alta
             if (userDoc.exists()) {
                 currentHighScore = userDoc.data().highScore;
             }
 
-            // Apenas guarda no Firebase se a nova pontuação for um recorde
             if (score > currentHighScore) {
                 console.log(`Novo recorde! A guardar ${score} para ${username}`);
                 await setDoc(userDocRef, {
-                    username: username, // Guarda o nome original para mostrar no leaderboard
+                    username: username,
                     highScore: score,
-                    lastUpdated: serverTimestamp(), // Guarda a data/hora do servidor
+                    lastUpdated: serverTimestamp(),
                 });
             } else {
                 console.log(`Pontuação de ${score} não superou o recorde de ${currentHighScore}.`);
@@ -68,7 +69,6 @@ export default function HomePage() {
             console.error("Erro ao guardar a pontuação no Firebase: ", error);
         }
 
-        // Depois de jogar, volta sempre para o ecrã de login
         setView('login');
     };
 
@@ -85,6 +85,7 @@ export default function HomePage() {
                     onPlay={handlePlay}
                     onShowLeaderboard={handleShowLeaderboard}
                     onShowSkins={handleShowSkins}
+                    onShowPatchNotes={handleShowPatchNotes} // ADIÇÃO: Passa a nova função para o LoginScreen
                 />
             )}
 
@@ -97,6 +98,9 @@ export default function HomePage() {
                     onBack={handleBackToLogin}
                 />
             )}
+            
+            {/* ADIÇÃO: Renderiza o novo ecrã quando a vista for 'patchnotes' */}
+            {view === 'patchnotes' && <PatchNotesScreen onBack={handleBackToLogin} />}
 
             {view === 'game' && (
                 <div className="flex w-full flex-col items-center">

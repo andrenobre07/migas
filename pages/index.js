@@ -3,13 +3,12 @@ import Game from '../components/Game';
 import LoginScreen from '../components/LoginScreen';
 import Leaderboard from '../components/Leaderboard';
 import SkinsScreen from '../components/SkinsScreen';
-import PatchNotesScreen from '../components/PatchNotesScreen'; // ADIÇÃO: Importa o novo componente
+import PatchNotesScreen from '../components/PatchNotesScreen';
 import { db } from '../firebase/config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function HomePage() {
-    // ADIÇÃO: 'patchnotes' foi adicionado às vistas possíveis
-    const [view, setView] = useState('login'); // 'login', 'game', 'leaderboard', 'skins', 'patchnotes'
+    const [view, setView] = useState('login');
     const [username, setUsername] = useState('');
     const [selectedSkin, setSelectedSkin] = useState('/images/dino.png');
     const gameRef = useRef(null);
@@ -28,7 +27,6 @@ export default function HomePage() {
         setView('skins');
     };
 
-    // ADIÇÃO: Nova função para mostrar o ecrã de Patch Notes
     const handleShowPatchNotes = () => {
         setView('patchnotes');
     };
@@ -37,18 +35,22 @@ export default function HomePage() {
         setView('login');
     };
 
+    // ADIÇÃO: Esta função será chamada pelo botão "Ver Leaderboard" no ecrã de Game Over.
+    const handleGoToLeaderboard = () => {
+        setView('leaderboard');
+    };
+
+    // --- ALTERAÇÃO PRINCIPAL ---
     const handleGameOver = async (score) => {
         console.log(`Fim de jogo para ${username} com a pontuação: ${score}`);
         if (!username) {
             console.error("Username está vazio, não é possível guardar a pontuação.");
-            setView('login');
-            return;
+            return; // Apenas termina a função sem mudar de ecrã
         }
 
         try {
             const userDocRef = doc(db, 'leaderboard', username.toLowerCase());
             const userDoc = await getDoc(userDocRef);
-
             let currentHighScore = 0;
             if (userDoc.exists()) {
                 currentHighScore = userDoc.data().highScore;
@@ -64,12 +66,13 @@ export default function HomePage() {
             } else {
                 console.log(`Pontuação de ${score} não superou o recorde de ${currentHighScore}.`);
             }
-
         } catch (error) {
             console.error("Erro ao guardar a pontuação no Firebase: ", error);
         }
 
-        setView('login');
+        // ALTERAÇÃO: A linha abaixo foi REMOVIDA.
+        // A função já não força o regresso ao ecrã de login.
+        // setView('login'); 
     };
 
     const handleJumpButtonClick = () => {
@@ -85,7 +88,7 @@ export default function HomePage() {
                     onPlay={handlePlay}
                     onShowLeaderboard={handleShowLeaderboard}
                     onShowSkins={handleShowSkins}
-                    onShowPatchNotes={handleShowPatchNotes} // ADIÇÃO: Passa a nova função para o LoginScreen
+                    onShowPatchNotes={handleShowPatchNotes}
                 />
             )}
 
@@ -99,7 +102,6 @@ export default function HomePage() {
                 />
             )}
             
-            {/* ADIÇÃO: Renderiza o novo ecrã quando a vista for 'patchnotes' */}
             {view === 'patchnotes' && <PatchNotesScreen onBack={handleBackToLogin} />}
 
             {view === 'game' && (
@@ -107,7 +109,8 @@ export default function HomePage() {
                     <Game 
                         ref={gameRef} 
                         username={username}
-                        onGameOver={handleGameOver} 
+                        onGameOver={handleGameOver}
+                        onGoToLeaderboard={handleGoToLeaderboard} // ADIÇÃO: Passa a função para o ecrã de Game Over
                         skin={selectedSkin}
                     />
                     <button 

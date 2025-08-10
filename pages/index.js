@@ -35,17 +35,15 @@ export default function HomePage() {
         setView('login');
     };
 
-    // ADIÇÃO: Esta função será chamada pelo botão "Ver Leaderboard" no ecrã de Game Over.
     const handleGoToLeaderboard = () => {
         setView('leaderboard');
     };
 
-    // --- ALTERAÇÃO PRINCIPAL ---
     const handleGameOver = async (score) => {
         console.log(`Fim de jogo para ${username} com a pontuação: ${score}`);
         if (!username) {
             console.error("Username está vazio, não é possível guardar a pontuação.");
-            return; // Apenas termina a função sem mudar de ecrã
+            return;
         }
 
         try {
@@ -69,10 +67,6 @@ export default function HomePage() {
         } catch (error) {
             console.error("Erro ao guardar a pontuação no Firebase: ", error);
         }
-
-        // ALTERAÇÃO: A linha abaixo foi REMOVIDA.
-        // A função já não força o regresso ao ecrã de login.
-        // setView('login'); 
     };
 
     const handleJumpButtonClick = () => {
@@ -110,7 +104,9 @@ export default function HomePage() {
                         ref={gameRef} 
                         username={username}
                         onGameOver={handleGameOver}
-                        onGoToLeaderboard={handleGoToLeaderboard} // ADIÇÃO: Passa a função para o ecrã de Game Over
+                        onGoToLeaderboard={handleGoToLeaderboard}
+                        onGoToSkins={handleShowSkins} // ADIÇÃO: Passa a função para ir para as Skins
+                        onBackToLogin={handleBackToLogin} // ADIÇÃO: Passa a função para voltar ao Login
                         skin={selectedSkin}
                     />
                     <button 
@@ -130,3 +126,4 @@ export default function HomePage() {
         </main>
     );
 }
+     

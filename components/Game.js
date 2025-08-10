@@ -1,10 +1,8 @@
 // --- components/Game.js (VERSÃO ATUALIZADA E COMPLETA) ---
 import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import Image from 'next/image';
-// O import do HomePage foi removido pois não é necessário e pode causar erros.
 
 // --- CONFIGURAÇÕES GLOBAIS ---
-// A constante DINO_IMAGE_PATH já não é usada para renderizar, mas pode ser mantida se quiseres
 const DINO_IMAGE_PATH = '/images/dino.png'; 
 const OBSTACLE_IMAGE_PATH = '/images/cactus.png';
 const GAMEOVER_IMAGE_PATH = '/images/gameover.png';
@@ -31,8 +29,8 @@ const OBSTACLE_WIDTH = 40;
 const OBSTACLE_HEIGHT = 80;
 // -----------------------------------------------------------------
 
-// 1ª ALTERAÇÃO: Adicionada a prop "skin" aqui
-const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard, skin, onShowSkins }, ref) => {
+// ADIÇÃO: Adicionadas as props onGoToSkins e onBackToLogin
+const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard, skin, onGoToSkins, onBackToLogin }, ref) => {
     // --- State Hooks ---
     const [isPlaying, setIsPlaying] = useState(false);
     const [isJumping, setIsJumping] = useState(false);
@@ -200,12 +198,13 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard, skin, onShow
             tabIndex={0}
         >
             {isGameOver && (
-                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm">
+                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="w-1/2 max-w-[300px] mb-4">
                         <Image src={GAMEOVER_IMAGE_PATH} alt="Game Over" width={384} height={76} layout="responsive" unoptimized/>
                     </div>
                     <p className="text-white text-3xl font-bold mb-6">Pontuação: {finalScore}</p>
-                    <div className="flex flex-col sm:flex-row gap-4">
+                    {/* ADIÇÃO: Layout dos botões alterado para uma grelha 2x2 para melhor organização */}
+                    <div className="grid grid-cols-2 gap-4">
                         <button 
                             onClick={startGame}
                             className="px-6 py-3 bg-green-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-green-600 transition-colors"
@@ -216,13 +215,20 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard, skin, onShow
                             onClick={onGoToLeaderboard}
                             className="px-6 py-3 bg-blue-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-blue-600 transition-colors"
                         >
-                            Ver Leaderboard
+                            Leaderboard
                         </button>
-                         <button 
-                            onClick={onShowSkins}
-                            className="px-6 py-3 bg-blue-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-blue-600 transition-colors"
+                        <button 
+                            onClick={onGoToSkins} // ADIÇÃO: onClick ligado à função correta
+                            className="px-6 py-3 bg-purple-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-purple-600 transition-colors"
                         >
                             Skins
+                        </button>
+                        {/* ADIÇÃO: Novo botão para voltar ao início */}
+                        <button 
+                            onClick={onBackToLogin}
+                            className="px-6 py-3 bg-gray-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-gray-600 transition-colors"
+                        >
+                            Voltar ao Menu
                         </button>
                     </div>
                 </div>
@@ -240,7 +246,6 @@ const Game = forwardRef(({ username, onGameOver, onGoToLeaderboard, skin, onShow
                     bottom: `${GROUND_HEIGHT_PX + dinoY}px`, left: `${DINO_INITIAL_LEFT_PX}px`,
                 }}
             >
-                {/* 2ª ALTERAÇÃO: A prop "skin" é usada aqui em vez do caminho fixo */}
                 <Image src={skin} alt="Dino" layout="fill" objectFit="contain" unoptimized />
             </div>
 

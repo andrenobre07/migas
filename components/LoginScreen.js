@@ -51,7 +51,7 @@ const LoginScreen = ({ username, setUsername, onPlay, onShowLeaderboard, onShowS
                     onClick={onShowPatchNotes}
                     className="w-full px-6 py-3 text-lg text-white bg-orange-500 rounded-md cursor-pointer transition-colors hover:bg-orange-600"
                 >
-                    Patch Notes
+                    Patch Notes (New!)
                 </button>
             </div>
         </div>

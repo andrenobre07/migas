@@ -11,16 +11,17 @@ const patchNotesData = [
         date: "09/08/2025",
         notes: [
             "Leaderboard reset",
-            "Skins adicionada",
+            "Skins adicionadas",
         ]
     },
     
     {
-        version: "1.4.0",
+        version: "1.3.1",
         date: "10/08/2025",
         notes: [
             "Patchnotes adicionado",
             "Skin -Migas benfiquista- adicionada",
+            "Bugs Resolvidos"
         ]
     },
   
